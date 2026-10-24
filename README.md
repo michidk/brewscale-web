@@ -46,16 +46,13 @@ import { bookoo } from 'brewscale-web';
 const event = bookoo.ultra.decode(packet); // throws DecodeError on bad length, header or checksum
 ```
 
-Measurement and event values also expose the Rust-compatible fixed-point fields
-(`weightCg`, `flowCgPerS`, `standbyDeciMin`, `resultC`, and `weightCg` for dose
-events). The floating-point fields are convenience conversions for browser UI.
-
 To support another transport, implement `Link` and call `Scale.attach(link, protocol, listener)`. To support another vendor, implement `Driver` and `Protocol` and pass the driver to `requestScale`.
 
-The browser adapter intentionally differs from Rust at the platform boundary:
-`requestScale` uses the browser's user-controlled chooser, events are callbacks,
-and transport failures reject promises. Rust's `find` scans until a matching
-device and `Scale::next_event` is a pull-based stream with a unified error type.
+The browser API uses JavaScript numbers, callbacks, promises, and the browser's
+user-controlled chooser. Rust uses fixed-point values, pull-based async streams,
+and explicit transport errors. These are intentional language and platform
+choices; the shared contract is the meaning of events, commands, capabilities,
+and protocol detection.
 
 ## Browser support
 

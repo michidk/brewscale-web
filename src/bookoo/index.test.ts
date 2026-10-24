@@ -10,9 +10,8 @@ function packet(bytes: number[] = [3, 0x0b, 1, 2, 3, 1, 43, 0, 7, 12, 45, 0, 250
 
 test('decodes a measurement with signed flow, scale time and settings', () => {
   assert.deepEqual(mini.decode(packet()), {
-    type: 'measurement', elapsedMs: 66051, unit: 'g', weightCg: 1804, weight: 18.04,
-    flowCgPerS: -250, flow: -2.5, battery: 87, standbyDeciMin: 600,
-    standbyMinutes: 60, beepLevel: 2, flowSmoothing: true,
+    type: 'measurement', elapsedMs: 66051, unit: 'g', weight: 18.04, flow: -2.5,
+    battery: 87, standbyMinutes: 60, beepLevel: 2, flowSmoothing: true,
   });
 });
 
@@ -32,10 +31,10 @@ test('rejects truncated, foreign and corrupt packets', () => {
 
 test('only the Ultra decodes powder and auto-brew packets', () => {
   const powder = packet([3, 0x0f, 0x2d, 0, 0x07, 0xd0, ...Array(13).fill(0)]);
-  assert.deepEqual(ultra.decode(powder), { type: 'powder-weight', weightCg: -2000, weight: -20 });
+  assert.deepEqual(ultra.decode(powder), { type: 'powder-weight', weight: -20 });
   assert.throws(() => mini.decode(powder), { reason: 'unknown-type' });
   const autoBrew = packet([3, 0x0d, 4, 0, 0x75, 0x30, 0, 0, 0x0f, 0xa0, 0, 0x01, 0x2c, ...Array(6).fill(0)]);
-  assert.deepEqual(ultra.decode(autoBrew), { type: 'auto-brew', state: 'exit-done', elapsedMs: 30000, weightCg: 4000, weight: 40, resultC: 300, result: 3 });
+  assert.deepEqual(ultra.decode(autoBrew), { type: 'auto-brew', state: 'exit-done', elapsedMs: 30000, weight: 40, result: 3 });
 });
 
 test('encodes command frames with checksum', () => {

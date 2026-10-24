@@ -4,18 +4,12 @@ export type WeightUnit = 'g' | 'oz' | { readonly unknown: number };
 
 export interface Measurement {
   readonly elapsedMs: number;
-  /** Weight in hundredths of a gram, matching brewscale-core. */
-  readonly weightCg: number;
   /** Grams, signed. */
   readonly weight: number;
-  /** Flow in hundredths of a gram per second, matching brewscale-core. */
-  readonly flowCgPerS: number;
   /** Grams per second, signed. */
   readonly flow: number;
   readonly unit: WeightUnit;
   readonly battery: number;
-  /** Remaining standby time in tenths of a minute, matching brewscale-core. */
-  readonly standbyDeciMin: number;
   readonly standbyMinutes: number;
   readonly beepLevel: number;
   readonly flowSmoothing: boolean;
@@ -26,16 +20,13 @@ export type AutoBrewState = 'stopped' | 'started' | 'ready' | 'exit-ready' | 'ex
 export interface AutoBrewEvent {
   readonly state: AutoBrewState;
   readonly elapsedMs: number;
-  readonly weightCg: number;
   readonly weight: number;
-  /** Average flow or ratio, scaled by 100, matching brewscale-core. */
-  readonly resultC: number;
   readonly result: number;
 }
 
 export type ScaleEvent =
   | ({ readonly type: 'measurement' } & Measurement)
-  | { readonly type: 'powder-weight'; readonly weightCg: number; readonly weight: number }
+  | { readonly type: 'powder-weight'; readonly weight: number }
   | ({ readonly type: 'auto-brew' } & AutoBrewEvent);
 
 export type Command =
