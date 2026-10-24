@@ -1,6 +1,6 @@
 # brewscale-web
 
-Read BOOKOO Themis Mini and Ultra coffee scales in the browser over Web Bluetooth. This is the TypeScript port of [brewscale-rs](https://github.com/michidk/brewscale-rs), with the same layering.
+A protocol-agnostic TypeScript library for coffee scales in the browser over Web Bluetooth. It provides vendor-neutral scale events, commands, capabilities, and transport boundaries. The Rust implementation is [brewscale-rs](https://github.com/michidk/brewscale-rs); both projects share the same design.
 
 | Module | Rust counterpart | Contents |
 | --- | --- | --- |
@@ -8,6 +8,15 @@ Read BOOKOO Themis Mini and Ultra coffee scales in the browser over Web Bluetoot
 | `src/bookoo` | `brewscale-bookoo` | `mini`, `ultra`, model detection, packet decoding and command encoding |
 | `src/web-bluetooth` | `brewscale` (btleplug) | `requestScale` and the `WebBluetoothLink` backend |
 | `demo` | `examples` | Live readings page built on the public API |
+
+## Supported models
+
+The current built-in protocol support is:
+
+- BOOKOO Themis Mini
+- BOOKOO Themis Ultra
+
+More vendors can be added by implementing `Driver` and `Protocol`.
 
 ## Usage
 
@@ -56,9 +65,9 @@ npm run build      # library to dist/
 npm run build:demo # static demo to dist-demo/
 ```
 
-## Protocol
+## BOOKOO protocol
 
-Service `0x0FFE`, notify `0xFF11`, write `0xFF12`. Every packet is `[0x03, type, data.., xor]`, where `xor` is the XOR of all preceding bytes. Notifications are 20 bytes; weights and flow are sign byte plus big-endian magnitude in hundredths. The wire format is documented in [BooKooCode/OpenSource](https://github.com/BooKooCode/OpenSource).
+The current BOOKOO implementation uses service `0x0FFE`, notify `0xFF11`, write `0xFF12`. Every packet is `[0x03, type, data.., xor]`, where `xor` is the XOR of all preceding bytes. Notifications are 20 bytes; weights and flow are sign byte plus big-endian magnitude in hundredths. The wire format is documented in [BooKooCode/OpenSource](https://github.com/BooKooCode/OpenSource).
 
 ## License
 
