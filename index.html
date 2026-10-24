@@ -147,9 +147,9 @@
     } catch (error) {
       if (device?.gatt.connected) device.gatt.disconnect();
       characteristic?.removeEventListener('characteristicvaluechanged', notification);
-      $('status-text').textContent = error.name === 'NotFoundError' ? 'No scale selected' : 'Connection failed';
-      $('device-id').textContent = error.name === 'NotFoundError' ? 'Turn on your scale, then choose Connect BOOKOO.' : `${error.name}: ${error.message} Close other apps connected to the scale and retry.`;
-      $('connect').textContent = 'Connect BOOKOO';
+      $('status-text').textContent = error.name === 'NotFoundError' ? 'Permission granted' : 'Connection failed';
+      $('device-id').textContent = error.name === 'NotFoundError' ? 'Click Connect BOOKOO again to open the device picker, then choose your scale.' : `${error.name}: ${error.message} Close other apps connected to the scale and retry.`;
+      $('connect').textContent = error.name === 'NotFoundError' ? 'Open device picker' : 'Try again';
     } finally { busy = false; $('connect').disabled = false; }
   }
   $('connect').addEventListener('click', connect);
