@@ -1,7 +1,36 @@
 {
   "name": "brewscale-web",
-  "private": true,
+  "version": "0.1.0",
+  "description": "Read BOOKOO coffee scales in the browser over Web Bluetooth. TypeScript port of brewscale-rs.",
+  "license": "MIT",
+  "repository": "github:michidk/brewscale-web",
   "type": "module",
-  "scripts": { "build": "tsc", "test": "node --test --experimental-strip-types tests/*.test.ts", "dev": "python3 -m http.server 8080 -d demo" },
-  "devDependencies": { "typescript": "^5.7.0" }
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "!src/**/*.test.ts"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "check": "tsc",
+    "test": "node --test \"src/**/*.test.ts\"",
+    "dev": "vite",
+    "build:demo": "vite build",
+    "prepublishOnly": "npm run check && npm test && npm run build"
+  },
+  "dependencies": {
+    "@types/web-bluetooth": "^0.0.22"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.5"
+  }
 }

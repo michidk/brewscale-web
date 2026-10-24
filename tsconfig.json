@@ -1,23 +1,17 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "ES2022",
-    "moduleResolution": "Bundler",
-    "lib": [
-      "ES2022",
-      "DOM"
-    ],
+    "module": "NodeNext",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["node", "web-bluetooth"],
     "strict": true,
-    "noEmitOnError": true,
-    "outDir": "dist",
-    "rootDir": ".",
+    "noImplicitOverride": true,
     "verbatimModuleSyntax": true,
-    "skipLibCheck": true
+    "erasableSyntaxOnly": true,
+    "allowImportingTsExtensions": true,
+    "rewriteRelativeImportExtensions": true,
+    "skipLibCheck": true,
+    "noEmit": true
   },
-  "include": [
-    "src/**/*.ts",
-    "demo/**/*.ts",
-    "tests/**/*.ts",
-    "src/**/*.d.ts"
-  ]
+  "include": ["src", "demo", "vite.config.ts"]
 }
