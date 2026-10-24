@@ -29,3 +29,9 @@ node --test protocol.test.mjs
 ```
 
 Tests cover the reference brewscale measurement fixture, negative flow, scale time, invalid checksums, truncated frames, offset DataViews, and ignored packet types.
+
+## Shared protocol design
+
+The web client mirrors the Rust crate's protocol boundary. Each scale protocol exports its GATT identifiers, optional device matcher, and a byte decoder from `protocols.mjs`. The Bluetooth connection and UI consume the common reading shape and do not decode vendor packets themselves. Add another protocol by adding an object to `protocols.mjs`, then register it in the `protocols` array.
+
+The reference implementation lives in [brewscale-rs](https://github.com/michidk/brewscale-rs). The Rust README documents the corresponding `Protocol`, `Detect`, `Transport`, and `Link` boundaries. Keep the protocol fields and shared reading semantics aligned between both repositories.

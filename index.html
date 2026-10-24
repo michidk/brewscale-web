@@ -31,8 +31,8 @@
 <footer>Chrome or Edge required for Web Bluetooth. Vivaldi may grant permission but fail to open the device picker.<span class="mono" id="mode">Ready to connect</span></footer>
 </main>
 <script type="module">
-  import { decodeMeasurement } from "./protocol.mjs";
-  const SERVICE = 0x0ffe, NOTIFY = 0xff11;
+  import { protocols } from "./protocols.mjs";
+  const protocol = protocols[0];
   const $ = id => document.getElementById(id);
   let device, characteristic, busy = false, connected = false, lastReading = 0;
   let points = [];
@@ -63,7 +63,7 @@
   }
   function notification(event) {
     try {
-      const reading = decodeMeasurement(event.target.value);
+      const reading = protocol.decode(event.target.value);
       if (reading) render(reading);
     } catch (error) { $('reading-state').textContent = error.message; }
   }
@@ -106,7 +106,7 @@
       // acceptAllDevices is required so the browser can show it in the chooser.
       device = await navigator.bluetooth.requestDevice({
         acceptAllDevices: true,
-        optionalServices: [SERVICE],
+        optionalServices: protocols.map(p => p.service),
       });
       busy = false;
       $('connect').disabled = true;
@@ -116,9 +116,9 @@
       $('device-id').textContent = 'Opening Bluetooth connection…';
       const server = await device.gatt.connect();
       $('status-text').textContent = 'Finding BOOKOO service';
-      const service = await server.getPrimaryService(SERVICE);
+      const service = await server.getPrimaryService(protocol.service);
       $('status-text').textContent = 'Finding measurement channel';
-      characteristic = await service.getCharacteristic(NOTIFY);
+      characteristic = await service.getCharacteristic(protocol.notificationCharacteristic);
       clearReadings();
       characteristic.addEventListener('characteristicvaluechanged', notification);
       $('status-text').textContent = 'Enabling readings';
