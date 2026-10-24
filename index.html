@@ -16,7 +16,7 @@
     .connect { margin-top:22px; padding:10px 15px; border:1px solid var(--ink); background:var(--ink); color:white; border-radius:3px; font:inherit; cursor:pointer; } .connect:hover { background:var(--green); border-color:var(--green); } .connect:focus-visible { outline:2px solid var(--green); outline-offset:3px; }
     .device { display:flex; justify-content:space-between; border-top:2px solid var(--ink); border-bottom:1px solid var(--line); padding:16px 0; } .eyebrow,.mono { color:var(--muted); font:11px ui-monospace,monospace; text-transform:uppercase; letter-spacing:.06em; } .device-name { margin-top:5px; } .device-id { color:var(--muted); font-size:12px; margin-top:3px; } .battery { color:var(--green); font:12px ui-monospace,monospace; }
     .readings { display:grid; grid-template-columns:1.5fr 1fr 1fr; border-bottom:1px solid var(--line); margin-top:36px; } .reading { padding:17px 18px 20px 0; border-right:1px solid var(--line); margin-right:18px; } .reading:last-child { border:0; margin:0; } .value { font:500 38px ui-monospace,monospace; margin-top:18px; letter-spacing:-.08em; } .unit { color:var(--muted); font:13px system-ui,sans-serif; letter-spacing:0; }
-    .chart-card { margin-top:34px; } .chart-head { display:flex; justify-content:space-between; } .chart-head h2 { font-size:14px; font-weight:600; margin:0; } .chart { height:170px; margin-top:16px; } svg { width:100%; height:100%; } .gridline { stroke:var(--line); stroke-width:1; } .line { fill:none; stroke:var(--green); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; } .area { fill:rgba(46,107,69,.08); } .axis { fill:var(--muted); font:10px ui-monospace,monospace; }
+    .chart-card { margin-top:34px; } .chart-head { display:flex; justify-content:space-between; } .chart-head h2 { font-size:14px; font-weight:600; margin:0; } .chart { height:170px; margin-top:16px; } svg { width:100%; height:100%; } .gridline { stroke:var(--line); stroke-width:1; } .line { fill:none; stroke:#111; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; } .area { fill:rgba(17,17,17,.08); } .axis { fill:var(--muted); font:10px ui-monospace,monospace; }
     footer { border-top:1px solid var(--line); margin-top:30px; padding-top:12px; color:var(--muted); font-size:11px; line-height:1.4; }
     @media(max-width:560px){ main{padding-top:18px}.readings{grid-template-columns:1fr 1fr}.reading:first-child{grid-column:1/-1;border-right:0;border-bottom:1px solid var(--line);margin:0}.reading:nth-child(2){border-right:1px solid var(--line)} }
   </style>
@@ -27,8 +27,8 @@
 <section class="intro"><h1>BOOKOO scale</h1><p class="lede">Connect your scale to read weight, flow, and timer.</p><button class="connect" id="connect">Connect</button></section>
 <section class="device"><div><div class="eyebrow">device</div><div class="device-name" id="device-name">No scale selected</div><div class="device-id" id="device-id">Waiting for a device</div></div><div class="battery" id="battery">— %</div></section>
 <section class="readings"><div class="reading"><div class="eyebrow">weight</div><div class="value"><span id="weight">—</span><span class="unit">g</span></div><div class="lede"><span id="reading-state">Waiting for scale readings</span> · <span id="updated">No data yet</span></div></div><div class="reading"><div class="eyebrow">flow</div><div class="value"><span id="flow">—</span><span class="unit"> g/s</span></div></div><div class="reading"><div class="eyebrow">timer</div><div class="value"><span id="timer">—</span></div></div></section>
-<section class="chart-card"><div class="chart-head"><h2>Weight over time</h2><span class="eyebrow">30 seconds</span></div><div class="chart"><svg viewBox="0 0 500 200" preserveAspectRatio="none" aria-label="Weight over time"><line class="gridline" x1="0" y1="20" x2="500" y2="20"/><line class="gridline" x1="0" y1="100" x2="500" y2="100"/><line class="gridline" x1="0" y1="180" x2="500" y2="180"/><path class="area" id="area-path"/><path class="line" id="chart-line"/><text class="axis" x="0" y="198">30s ago</text><text class="axis" x="460" y="198">now</text></svg></div></section>
-<footer>Chrome or Edge required for Web Bluetooth. Vivaldi may grant permission but fail to open the device picker.<span class="mono" id="mode">Ready to connect</span></footer>
+<section class="chart-card"><div class="chart-head"><h2>Weight over time</h2><span class="eyebrow">30 seconds</span></div><div class="chart"><svg viewBox="0 0 500 200" preserveAspectRatio="none" aria-label="Weight over time"><line class="gridline" x1="0" y1="20" x2="500" y2="20"/><line class="gridline" x1="0" y1="100" x2="500" y2="100"/><line class="gridline" x1="0" y1="180" x2="500" y2="180"/><path class="area" id="area-path"/><path class="line" id="chart-line"/><text class="axis" x="0" y="198">30s ago</text><text class="axis" x="420" y="198">now</text></svg></div></section>
+<footer><span class="mono" id="mode">Ready to connect</span></footer>
 </main>
 <script type="module">
   import { protocols } from "./protocols.mjs";
@@ -134,7 +134,7 @@
       $('device-name').textContent = device.name || 'BOOKOO scale';
       $('device-id').textContent = 'Bluetooth link active';
       $('reading-state').textContent = lastReading ? 'Live reading' : 'Waiting for scale readings';
-      $('mode').textContent = 'Live Bluetooth';
+      $('mode').textContent = 'Connected';
       $('connect').textContent = 'Disconnect';
     } catch (error) {
       if (device?.gatt.connected) device.gatt.disconnect();
