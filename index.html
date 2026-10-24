@@ -118,10 +118,16 @@
     try {
       // Some BOOKOO firmware versions omit the service/name from advertisements.
       // Let the browser list nearby devices, then request the service after selection.
-      device = await navigator.bluetooth.requestDevice({
-        acceptAllDevices: true,
+      // requestDevice must stay inside the click handler. Vivaldi first asks
+      // for site permission, then opens its chooser after that permission is granted.
+      const chooser = navigator.bluetooth.requestDevice({
+        filters: [{ services: [SERVICE] }, { namePrefix: 'BOOKOO_SC' }, { namePrefix: 'OOKOO_SC' }],
         optionalServices: [SERVICE],
       });
+      device = await Promise.race([
+        chooser,
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Bluetooth chooser did not open. In Vivaldi, click Allow, reload this page, then try again.')), 15000)),
+      ]);
       device.addEventListener('gattserverdisconnected', disconnected, { once: true });
       $('device-name').textContent = device.name || 'BOOKOO scale';
       $('status-text').textContent = 'Connecting to scale';
