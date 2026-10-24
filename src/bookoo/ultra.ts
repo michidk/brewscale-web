@@ -35,7 +35,10 @@ export const ultra: Protocol = {
       case TYPE_MEASUREMENT:
         return decodeMeasurement(packet);
       case TYPE_POWDER:
-        return { type: 'powder-weight', weight: signed(packet[2], u24(packet, 3)) / 100 };
+        return (() => {
+          const weightCg = signed(packet[2], u24(packet, 3));
+          return { type: 'powder-weight', weightCg, weight: weightCg / 100 };
+        })();
       case TYPE_AUTO_BREW:
         return decodeAutoBrew(packet);
       default:

@@ -38,14 +38,20 @@ export function check(p: Uint8Array): void {
 export const unknownType = (p: Uint8Array) => new DecodeError('unknown-type', `unknown packet type ${hex(p[1])}`);
 
 export function decodeMeasurement(p: Uint8Array): ScaleEvent {
+  const weightCg = signed(p[6], u24(p, 7));
+  const flowCgPerS = signed(p[10], u16(p, 11));
+  const standbyDeciMin = u16(p, 14);
   return {
     type: 'measurement',
     elapsedMs: u24(p, 2),
     unit: p[5] === 1 ? 'g' : p[5] === 2 ? 'oz' : { unknown: p[5] },
-    weight: signed(p[6], u24(p, 7)) / 100,
-    flow: signed(p[10], u16(p, 11)) / 100,
+    weightCg,
+    weight: weightCg / 100,
+    flowCgPerS,
+    flow: flowCgPerS / 100,
     battery: p[13],
-    standbyMinutes: u16(p, 14) / 10,
+    standbyDeciMin,
+    standbyMinutes: standbyDeciMin / 10,
     beepLevel: p[16],
     flowSmoothing: p[17] !== 0,
   };
@@ -54,12 +60,16 @@ export function decodeMeasurement(p: Uint8Array): ScaleEvent {
 export function decodeAutoBrew(p: Uint8Array): ScaleEvent {
   const state = AUTO_BREW_STATES[p[2]];
   if (!state) throw unknownType(p);
+  const weightCg = signed(p[6], u24(p, 7));
+  const resultC = signed(p[10], u16(p, 11));
   return {
     type: 'auto-brew',
     state,
     elapsedMs: u24(p, 3),
-    weight: signed(p[6], u24(p, 7)) / 100,
-    result: signed(p[10], u16(p, 11)) / 100,
+    weightCg,
+    weight: weightCg / 100,
+    resultC,
+    result: resultC / 100,
   };
 }
 

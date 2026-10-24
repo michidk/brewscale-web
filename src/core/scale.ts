@@ -5,6 +5,8 @@ export interface Link {
   readonly name?: string;
   subscribe(service: number, characteristic: number, onPacket: (packet: Uint8Array) => void): Promise<void>;
   write(service: number, characteristic: number, data: Uint8Array): Promise<void>;
+  /** Resolve a characteristic during attach so command availability is known early. */
+  readonly prepare?: (service: number, characteristic: number) => Promise<void>;
   onDisconnect(callback: () => void): void;
   disconnect(): void;
 }
@@ -39,6 +41,7 @@ export class Scale {
       }
       listener.event?.(event);
     });
+    await link.prepare?.(protocol.service, protocol.commandCharacteristic);
     // Registered only once attached, so a failed attach never reports a disconnect.
     link.onDisconnect(() => listener.disconnect?.());
     return new Scale(link, protocol);

@@ -12,6 +12,7 @@ function mockLink() {
     name: 'mock',
     subscribe: async (_s, _c, onPacket) => { push = onPacket; },
     write: async (_s, characteristic, data) => { writes.push({ characteristic, data: [...data] }); },
+    prepare: async () => {},
     onDisconnect: callback => { dropped = callback; },
     disconnect: () => dropped(),
   };

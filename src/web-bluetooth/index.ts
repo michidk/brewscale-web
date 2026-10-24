@@ -60,6 +60,10 @@ export class WebBluetoothLink implements Link {
     await c.startNotifications();
   }
 
+  async prepare(service: number, characteristic: number): Promise<void> {
+    await this.characteristic(service, characteristic);
+  }
+
   write(service: number, characteristic: number, data: Uint8Array): Promise<void> {
     const write = this.writes.then(async () => {
       const c = await this.characteristic(service, characteristic);
