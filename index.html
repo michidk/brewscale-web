@@ -104,7 +104,7 @@
     $('connect').textContent = 'Reconnect BOOKOO';
   }
   async function connect() {
-    if (busy) return;
+    if (busy && !device) { $('status-text').textContent = 'Vivaldi is still opening the chooser. If no picker appears, reload and try again.'; return; }
     if (connected) { device.gatt.disconnect(); return; }
     if (!window.isSecureContext || !navigator.bluetooth) {
       $('status-text').textContent = 'Web Bluetooth unavailable';
@@ -112,7 +112,7 @@
       return;
     }
     busy = true;
-    $('connect').disabled = true;
+    $('connect').disabled = false;
     $('connect').textContent = 'Connecting…';
     $('status-text').textContent = 'Waiting for device selection';
     try {
@@ -124,6 +124,8 @@
         acceptAllDevices: true,
         optionalServices: [SERVICE],
       });
+      busy = false;
+      $('connect').disabled = true;
       device.addEventListener('gattserverdisconnected', disconnected, { once: true });
       $('device-name').textContent = device.name || 'BOOKOO scale';
       $('status-text').textContent = 'Connecting to scale';
@@ -152,7 +154,7 @@
       $('status-text').textContent = error.name === 'NotFoundError' ? 'Permission granted' : 'Connection failed';
       $('device-id').textContent = error.name === 'NotFoundError' ? 'Click Connect BOOKOO again to open the device picker, then choose your scale.' : `${error.name}: ${error.message} Close other apps connected to the scale and retry.`;
       $('connect').textContent = error.name === 'NotFoundError' ? 'Open device picker' : 'Try again';
-    } finally { busy = false; $('connect').disabled = false; }
+    } finally { if (!device) { busy = false; $('connect').disabled = false; } }
   }
   $('connect').addEventListener('click', connect);
   setInterval(() => {
