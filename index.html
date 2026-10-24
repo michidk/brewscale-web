@@ -32,7 +32,7 @@
 </main>
 <script type="module">
   import { protocols } from "./protocols.mjs";
-  const protocol = protocols[0];
+  let protocol;
   const $ = id => document.getElementById(id);
   let device, characteristic, busy = false, connected = false, lastReading = 0;
   let points = [];
@@ -57,9 +57,9 @@
     points = points.filter(p => p.time >= lastReading - 30000);
     const min = Math.min(...points.map(p => p.weight)) - 1;
     const max = Math.max(...points.map(p => p.weight)) + 1;
-    const d = points.map((p, i) => `${i ? 'L' : 'M'}${500 - (lastReading - p.time) / 30000 * 500} ${220 - (p.weight - min) / (max - min) * 150}`).join(' ');
+    const d = points.map((p, i) => `${i ? 'L' : 'M'}${500 - (lastReading - p.time) / 30000 * 500} ${170 - (p.weight - min) / (max - min) * 130}`).join(' ');
     $('chart-line').setAttribute('d', d);
-    $('area-path').setAttribute('d', `${d} L500 240 L${500 - (lastReading - points[0].time) / 30000 * 500} 240 Z`);
+    $('area-path').setAttribute('d', `${d} L500 190 L${500 - (lastReading - points[0].time) / 30000 * 500} 190 Z`);
   }
   function notification(event) {
     try {
@@ -116,7 +116,11 @@
       $('device-id').textContent = 'Opening Bluetooth connection…';
       const server = await device.gatt.connect();
       $('status-text').textContent = 'Finding BOOKOO service';
-      const service = await server.getPrimaryService(protocol.service);
+      const available = await Promise.all(protocols.map(async candidate => { try { return [candidate, await server.getPrimaryService(candidate.service)]; } catch { return null; } }));
+      const match = available.find(Boolean);
+      if (!match) throw new Error('No supported scale protocol found on this device.');
+      protocol = match[0];
+      const service = match[1];
       $('status-text').textContent = 'Finding measurement channel';
       characteristic = await service.getCharacteristic(protocol.notificationCharacteristic);
       clearReadings();
