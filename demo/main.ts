@@ -37,6 +37,13 @@ function drawChart(): void {
   $('chart-area').setAttribute('d', line && `${line} L500 190 L${line.split(' ')[0].slice(1)} 190 Z`);
 }
 
+function clearReadings(): void {
+  for (const id of ['weight', 'flow', 'timer']) $(id).textContent = '—';
+  $('battery').textContent = '— %';
+  samples.length = 0;
+  drawChart();
+}
+
 function show(event: ScaleEvent): void {
   switch (event.type) {
     case 'measurement':
@@ -63,6 +70,8 @@ async function connect(): Promise<void> {
     $('device-detail').textContent = 'Open this page over HTTPS in Chrome or Edge.';
     return;
   }
+  const button = $('connect') as HTMLButtonElement;
+  button.disabled = true;
   try {
     setStatus('connecting…');
     const connected = await requestScale([bookoo.driver], {
@@ -72,6 +81,7 @@ async function connect(): Promise<void> {
         setConnected(undefined);
         setStatus('disconnected');
         $('device-detail').textContent = 'Connection closed';
+        clearReadings();
       },
     });
     setConnected(connected);
@@ -79,8 +89,15 @@ async function connect(): Promise<void> {
     $('device-name').textContent = connected.link.name ?? connected.protocol.name;
     $('device-detail').textContent = connected.protocol.name;
   } catch (error) {
+    // The browser reports a dismissed device picker as NotFoundError.
+    if (error instanceof DOMException && error.name === 'NotFoundError') {
+      setStatus('not connected');
+      return;
+    }
     setStatus('connection failed');
     $('device-detail').textContent = error instanceof Error ? error.message : String(error);
+  } finally {
+    button.disabled = false;
   }
 }
 

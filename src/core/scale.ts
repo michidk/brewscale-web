@@ -28,7 +28,6 @@ export class Scale {
 
   /** Subscribe to the protocol's notifications and start delivering events. */
   static async attach(link: Link, protocol: Protocol, listener: ScaleListener): Promise<Scale> {
-    link.onDisconnect(() => listener.disconnect?.());
     await link.subscribe(protocol.service, protocol.notifyCharacteristic, packet => {
       let event: ScaleEvent;
       try {
@@ -40,6 +39,8 @@ export class Scale {
       }
       listener.event?.(event);
     });
+    // Registered only once attached, so a failed attach never reports a disconnect.
+    link.onDisconnect(() => listener.disconnect?.());
     return new Scale(link, protocol);
   }
 

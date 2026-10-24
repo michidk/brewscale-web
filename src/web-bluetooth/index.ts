@@ -1,4 +1,4 @@
-/// <reference types="web-bluetooth" />
+/// <reference types="web-bluetooth" preserve="true" />
 /** Web Bluetooth backend: the browser counterpart of `brewscale`'s btleplug transport. */
 import type { Driver } from '../core/protocol.ts';
 import { Scale, type Link, type ScaleListener } from '../core/scale.ts';
@@ -10,6 +10,8 @@ export class WebBluetoothLink implements Link {
   private readonly device: BluetoothDevice;
   private readonly server: BluetoothRemoteGATTServer;
   private readonly characteristics = new Map<string, Promise<BluetoothRemoteGATTCharacteristic>>();
+  /** Chrome rejects a GATT write while another is in flight, so writes run one at a time. */
+  private writes: Promise<unknown> = Promise.resolve();
 
   private constructor(device: BluetoothDevice, server: BluetoothRemoteGATTServer) {
     this.device = device;
@@ -27,7 +29,15 @@ export class WebBluetoothLink implements Link {
 
   /** Which of `candidates` the device exposes. Only services listed in `optionalServices` are visible. */
   async services(candidates: readonly number[]): Promise<number[]> {
-    const present = new Set((await this.server.getPrimaryServices()).map(s => s.uuid));
+    let found: BluetoothRemoteGATTService[];
+    try {
+      found = await this.server.getPrimaryServices();
+    } catch (error) {
+      // A device picked by name may expose none of them; detection then falls back to the name.
+      if (error instanceof DOMException && error.name === 'NotFoundError') return [];
+      throw error;
+    }
+    const present = new Set(found.map(s => s.uuid));
     return candidates.filter(n => present.has(uuid(n)));
   }
 
@@ -50,9 +60,13 @@ export class WebBluetoothLink implements Link {
     await c.startNotifications();
   }
 
-  async write(service: number, characteristic: number, data: Uint8Array): Promise<void> {
-    const c = await this.characteristic(service, characteristic);
-    await c.writeValueWithResponse(data as Uint8Array<ArrayBuffer>);
+  write(service: number, characteristic: number, data: Uint8Array): Promise<void> {
+    const write = this.writes.then(async () => {
+      const c = await this.characteristic(service, characteristic);
+      await c.writeValueWithResponse(data as Uint8Array<ArrayBuffer>);
+    });
+    this.writes = write.catch(() => {});
+    return write;
   }
 
   onDisconnect(callback: () => void): void {

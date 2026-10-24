@@ -46,3 +46,12 @@ test('writes encoded commands to the command characteristic and reports disconne
   scale.disconnect();
   assert.ok(disconnected);
 });
+
+test('a failed attach does not report a disconnect', async () => {
+  const { link } = mockLink();
+  link.subscribe = async () => { throw new Error('GATT error'); };
+  let disconnected = false;
+  await assert.rejects(Scale.attach(link, mini, { disconnect: () => { disconnected = true; } }), /GATT error/);
+  link.disconnect();
+  assert.equal(disconnected, false);
+});
