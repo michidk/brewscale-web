@@ -52,7 +52,7 @@
   <header><div class="brand"><span class="mark"></span> brewscale</div><div class="status"><span class="dot" id="status-dot"></span><span id="status-text" role="status">not connected</span></div></header>
   <section class="hero"><div><div class="eyebrow">web bluetooth / bookoo</div><h1>Your brew,<br>in the moment.</h1><p class="lede">A tiny live view for your BOOKOO coffee scale. Turn on your scale, then connect to see weight, flow, and timer readings.</p><button class="connect" id="connect">Connect BOOKOO</button></div><div class="device"><div class="device-top"><div><div class="eyebrow">connected scale</div><div class="device-name" id="device-name">No scale selected</div><div class="device-id" id="device-id">Waiting for a device</div></div><div class="battery" id="battery">— %</div></div><div class="mono" style="color:var(--muted)">BOOKOO Themis Mini / Ultra</div></div></section>
   <section class="metrics"><div><div class="card weight-card"><div class="eyebrow">live weight</div><div class="weight"><span id="weight">18.04</span><span class="unit">g</span></div><div class="reading-meta"><span id="reading-state">Waiting for scale readings</span> · <span id="updated">just now</span></div></div><div class="secondary"><div class="card stat"><div class="eyebrow">flow rate</div><div class="stat-value"><span id="flow">2.50</span> <small>g/s</small></div></div><div class="card stat"><div class="eyebrow">session time</div><div class="stat-value"><span id="timer">00:24</span></div></div></div></div><div class="card chart-card"><div class="chart-head"><h2>Pour trace</h2><span class="eyebrow">last 30 sec</span></div><div class="chart"><svg viewBox="0 0 500 260" preserveAspectRatio="none" aria-label="Weight over time"><defs><linearGradient id="area" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#f19b5c" stop-opacity=".28"/><stop offset="1" stop-color="#f19b5c" stop-opacity="0"/></linearGradient></defs><line class="gridline" x1="0" y1="30" x2="500" y2="30"/><line class="gridline" x1="0" y1="115" x2="500" y2="115"/><line class="gridline" x1="0" y1="200" x2="500" y2="200"/><path class="area" id="area-path" d="M0 208 L30 205 L60 203 L90 192 L120 197 L150 184 L180 178 L210 182 L240 165 L270 157 L300 160 L330 141 L360 130 L390 126 L420 115 L450 119 L500 103 L500 240 L0 240 Z"/><path class="line" id="chart-line" d="M0 208 L30 205 L60 203 L90 192 L120 197 L150 184 L180 178 L210 182 L240 165 L270 157 L300 160 L330 141 L360 130 L390 126 L420 115 L450 119 L500 103"/><text class="axis" x="0" y="258">30s ago</text><text class="axis" x="465" y="258">now</text></svg></div></div></section>
-  <footer><span>Readings stay in your browser. Chrome or Edge recommended.</span><span class="mono" id="mode">Ready to connect</span></footer>
+  <footer><span>Chrome or Edge required for Web Bluetooth. Vivaldi may grant permission but fail to open the device picker.</span><span class="mono" id="mode">Ready to connect</span></footer>
 </main>
 <script type="module">
   import { decodeMeasurement } from "./protocol.mjs";
@@ -108,7 +108,7 @@
     if (connected) { device.gatt.disconnect(); return; }
     if (!window.isSecureContext || !navigator.bluetooth) {
       $('status-text').textContent = 'Web Bluetooth unavailable';
-      $('device-id').textContent = 'Open this page over HTTPS in Chrome or Edge on desktop, or Chrome on Android.';
+      $('device-id').textContent = 'Use Chrome or Edge. Vivaldi may show permission but not open the Bluetooth picker.';
       return;
     }
     if (navigator.bluetooth.getAvailability) {

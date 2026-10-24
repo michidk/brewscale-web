@@ -10,7 +10,7 @@ Serve the directory over HTTPS or localhost. For local development:
 python3 -m http.server 8080
 ```
 
-Open http://localhost:8080 in Chrome or Edge on desktop, or serve over HTTPS for Chrome on Android. Safari and Firefox do not currently support Web Bluetooth. Open the page directly in a browser tab if an embedded preview blocks Bluetooth permissions.
+Open http://localhost:8080 in Chrome or Edge on desktop, or serve over HTTPS for Chrome on Android. Safari and Firefox do not currently support Web Bluetooth. Vivaldi may show its Bluetooth permission prompt but fail to open the device picker, even though it is Chromium-based. Use Chrome or Edge for this PoC. Open the page directly in a browser tab if an embedded preview blocks Bluetooth permissions.
 
 Turn on your scale, close other apps connected to it, click **Connect BOOKOO**, and select it in the browser's device picker. The page shows weight, signed flow in g/s, battery, and the scale's timer. The chart retains the last 30 seconds of received weight readings. Click **Disconnect** to close the connection. Reconnect manually after a lost connection.
 
