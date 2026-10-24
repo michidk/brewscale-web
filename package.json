@@ -1,0 +1,7 @@
+{
+  "name": "brewscale-web",
+  "private": true,
+  "type": "module",
+  "scripts": { "build": "tsc", "test": "node --test --experimental-strip-types tests/*.test.ts", "dev": "python3 -m http.server 8080 -d demo" },
+  "devDependencies": { "typescript": "^5.7.0" }
+}

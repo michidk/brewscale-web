@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "Bundler",
+    "lib": [
+      "ES2022",
+      "DOM"
+    ],
+    "strict": true,
+    "noEmitOnError": true,
+    "outDir": "dist",
+    "rootDir": ".",
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "demo/**/*.ts",
+    "tests/**/*.ts",
+    "src/**/*.d.ts"
+  ]
+}
