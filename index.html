@@ -116,8 +116,10 @@
     $('connect').textContent = 'Connecting…';
     $('status-text').textContent = 'Waiting for device selection';
     try {
+      // Some BOOKOO firmware versions omit the service/name from advertisements.
+      // Let the browser list nearby devices, then request the service after selection.
       device = await navigator.bluetooth.requestDevice({
-        filters: [{ services: [SERVICE] }, { namePrefix: 'BOOKOO_SC' }, { namePrefix: 'OOKOO_SC' }],
+        acceptAllDevices: true,
         optionalServices: [SERVICE],
       });
       device.addEventListener('gattserverdisconnected', disconnected, { once: true });
