@@ -37,3 +37,20 @@ The web client mirrors the Rust crate's protocol boundary. Each scale protocol e
 The reference implementation lives in [brewscale-rs](https://github.com/michidk/brewscale-rs). The Rust README documents the corresponding `Protocol`, `Detect`, `Transport`, and `Link` boundaries. Keep the protocol fields and shared reading semantics aligned between both repositories.
 
 The interface exposes protocol actions that are safe to use during a brew: tare, tare and start, start/stop/reset timer, keep awake, and sleep. Device settings such as beep level, auto-off, flow smoothing, and powder target remain protocol capabilities rather than UI controls. Protocol events such as Ultra auto-brew state and powder weight are surfaced in the event line.
+
+## TypeScript structure
+
+The package mirrors the Rust workspace boundaries:
+
+- `src/core`: vendor-neutral protocol, event, command, and capability types.
+- `src/protocols/bookoo`: BOOKOO service definitions, frame encoding, and packet decoding.
+- `src/transport`: Web Bluetooth connection and notification transport.
+- `demo`: the browser application consuming the library.
+
+Build before serving the demo:
+
+```sh
+npm install
+npm run build
+npm run dev
+```
