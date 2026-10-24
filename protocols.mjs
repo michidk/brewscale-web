@@ -9,7 +9,7 @@ export const bookoo = {
     return /BOOKOO_SC|OOKOO_SC/i.test(device.name || '');
   },
   decode(dataView) {
-    if (dataView.byteLength !== 20) throw new Error('BOOKOO packet must be 20 bytes.');
+    if (dataView.byteLength !== 20) throw new Error('BOOKOO packet expected 20-byte packet.');
     const p = new Uint8Array(dataView.buffer, dataView.byteOffset, dataView.byteLength);
     if (p[0] !== 3) throw new Error('Invalid BOOKOO packet header.');
     if (p.slice(0, 19).reduce((a, b) => a ^ b, 0) !== p[19]) throw new Error('Invalid BOOKOO checksum.');
