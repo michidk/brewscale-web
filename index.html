@@ -114,17 +114,24 @@
     busy = true;
     $('connect').disabled = true;
     $('connect').textContent = 'Connecting…';
+    $('status-text').textContent = 'Waiting for device selection';
     try {
       device = await navigator.bluetooth.requestDevice({
         filters: [{ services: [SERVICE] }, { namePrefix: 'BOOKOO_SC' }, { namePrefix: 'OOKOO_SC' }],
         optionalServices: [SERVICE],
       });
       device.addEventListener('gattserverdisconnected', disconnected, { once: true });
+      $('device-name').textContent = device.name || 'BOOKOO scale';
+      $('status-text').textContent = 'Connecting to scale';
+      $('device-id').textContent = 'Opening Bluetooth connection…';
       const server = await device.gatt.connect();
+      $('status-text').textContent = 'Finding BOOKOO service';
       const service = await server.getPrimaryService(SERVICE);
+      $('status-text').textContent = 'Finding measurement channel';
       characteristic = await service.getCharacteristic(NOTIFY);
       clearReadings();
       characteristic.addEventListener('characteristicvaluechanged', notification);
+      $('status-text').textContent = 'Enabling readings';
       await characteristic.startNotifications();
       if (!device.gatt.connected) throw new Error('The scale disconnected during setup.');
       connected = true;
@@ -139,7 +146,7 @@
       if (device?.gatt.connected) device.gatt.disconnect();
       characteristic?.removeEventListener('characteristicvaluechanged', notification);
       $('status-text').textContent = error.name === 'NotFoundError' ? 'No scale selected' : 'Connection failed';
-      $('device-id').textContent = error.name === 'NotFoundError' ? 'Turn on your scale, then choose Connect BOOKOO.' : `${error.message} Close other apps connected to the scale and retry.`;
+      $('device-id').textContent = error.name === 'NotFoundError' ? 'Turn on your scale, then choose Connect BOOKOO.' : `${error.name}: ${error.message} Close other apps connected to the scale and retry.`;
       $('connect').textContent = 'Connect BOOKOO';
     } finally { busy = false; $('connect').disabled = false; }
   }
