@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#10140f" />
+  <title>Brewscale · live coffee data</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+    :root { --ink:#e9e8dd; --muted:#92978a; --bg:#10140f; --panel:#171c15; --line:#2a3225; --lime:#d6f36a; --orange:#f19b5c; --cyan:#8ed4c1; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink); font-family:'Space Grotesk', sans-serif; min-height:100vh; }
+    body:before { content:''; position:fixed; inset:0; pointer-events:none; background:radial-gradient(circle at 80% 12%, rgba(214,243,106,.08), transparent 34%), linear-gradient(115deg, transparent 0 49.8%, rgba(255,255,255,.025) 50%, transparent 50.2%); }
+    main { width:min(1180px, calc(100% - 48px)); margin:0 auto; padding:34px 0 56px; position:relative; }
+    header { display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--line); padding-bottom:22px; }
+    .brand { display:flex; gap:12px; align-items:center; font-weight:600; letter-spacing:-.03em; font-size:20px; }
+    .mark { width:28px; height:28px; border:2px solid var(--lime); border-radius:50%; position:relative; }
+    .mark:after { content:''; position:absolute; width:8px; height:2px; background:var(--lime); top:12px; left:5px; transform:rotate(-30deg); box-shadow:5px -3px 0 -0.5px var(--lime); }
+    .eyebrow,.mono { font-family:'DM Mono', monospace; font-size:12px; letter-spacing:.02em; }
+    .eyebrow { color:var(--muted); }
+    .status { display:flex; align-items:center; gap:8px; color:var(--muted); font-size:13px; }
+    .dot { width:8px; height:8px; border-radius:50%; background:var(--orange); box-shadow:0 0 0 4px rgba(241,155,92,.12); }
+    .dot.live { background:var(--lime); box-shadow:0 0 0 4px rgba(214,243,106,.12); }
+    .hero { display:grid; grid-template-columns:1.15fr .85fr; gap:42px; padding:66px 0 52px; align-items:end; }
+    h1 { font-size:clamp(42px, 6vw, 78px); line-height:.96; letter-spacing:-.07em; max-width:650px; margin:13px 0 22px; font-weight:600; }
+    .lede { color:var(--muted); max-width:465px; font-size:16px; line-height:1.55; margin:0; }
+    .connect { background:var(--lime); color:#161a12; border:0; padding:14px 20px; font:500 14px 'Space Grotesk'; border-radius:2px; cursor:pointer; margin-top:28px; transition:transform .15s, background .15s; }
+    .connect:hover { transform:translateY(-2px); background:#e3fa89; } .connect:focus-visible { outline:2px solid white; outline-offset:3px; }
+    .device { border:1px solid var(--line); padding:23px; background:rgba(23,28,21,.75); min-height:170px; display:flex; flex-direction:column; justify-content:space-between; }
+    .device-top { display:flex; justify-content:space-between; align-items:start; }
+    .device-name { font-size:20px; font-weight:500; margin-top:10px; }
+    .device-id { color:var(--muted); font-size:12px; margin-top:5px; }
+    .battery { color:var(--lime); font-family:'DM Mono'; font-size:12px; }
+    .metrics { display:grid; grid-template-columns:1.15fr .85fr; gap:16px; }
+    .card { border:1px solid var(--line); background:var(--panel); padding:24px; }
+    .weight-card { min-height:365px; position:relative; overflow:hidden; }
+    .weight-card:after { content:''; position:absolute; width:300px;height:300px; border:1px solid rgba(214,243,106,.12); border-radius:50%; right:-90px; bottom:-130px; }
+    .weight { font-size:clamp(70px, 10vw, 126px); letter-spacing:-.1em; line-height:1; margin:36px 0 6px; font-weight:500; color:var(--lime); }
+    .unit { font-size:20px; color:var(--muted); margin-left:8px; letter-spacing:-.03em; }
+    .reading-meta { color:var(--muted); font-size:13px; }
+    .secondary { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:16px; }
+    .stat { min-height:150px; } .stat-value { font:500 34px 'DM Mono'; margin-top:25px; letter-spacing:-.08em; } .stat-value small { font:400 14px 'Space Grotesk'; color:var(--muted); letter-spacing:0; }
+    .chart-card { min-height:365px; padding-bottom:16px; } .chart-head { display:flex; justify-content:space-between; align-items:center; } .chart-head h2 { margin:0; font-size:16px; font-weight:500; }
+    .chart { height:270px; margin-top:20px; position:relative; } svg { width:100%; height:100%; overflow:visible; } .gridline { stroke:var(--line); stroke-width:1; } .line { fill:none; stroke:var(--orange); stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; } .area { fill:url(#area); } .axis { fill:var(--muted); font:10px 'DM Mono'; }
+    .footer { display:flex; justify-content:space-between; border-top:1px solid var(--line); margin-top:42px; padding-top:17px; color:var(--muted); font-size:12px; }
+    .demo { color:var(--orange); }
+    @media (max-width:760px) { main { width:calc(100% - 30px); padding-top:20px; } .hero { grid-template-columns:1fr; gap:28px; padding:46px 0 34px; } .metrics { grid-template-columns:1fr; } .weight-card,.chart-card { min-height:320px; } .chart { height:220px; } .footer { gap:15px; flex-direction:column; } }
+  </style>
+</head>
+<body>
+<main>
+  <header><div class="brand"><span class="mark"></span> brewscale</div><div class="status"><span class="dot" id="status-dot"></span><span id="status-text" role="status">not connected</span></div></header>
+  <section class="hero"><div><div class="eyebrow">web bluetooth / bookoo</div><h1>Your brew,<br>in the moment.</h1><p class="lede">A tiny live view for your BOOKOO coffee scale. Turn on your scale, then connect to see weight, flow, and timer readings.</p><button class="connect" id="connect">Connect BOOKOO</button></div><div class="device"><div class="device-top"><div><div class="eyebrow">connected scale</div><div class="device-name" id="device-name">No scale selected</div><div class="device-id" id="device-id">Waiting for a device</div></div><div class="battery" id="battery">— %</div></div><div class="mono" style="color:var(--muted)">BOOKOO Themis Mini / Ultra</div></div></section>
+  <section class="metrics"><div><div class="card weight-card"><div class="eyebrow">live weight</div><div class="weight"><span id="weight">18.04</span><span class="unit">g</span></div><div class="reading-meta"><span id="reading-state">Waiting for scale readings</span> · <span id="updated">just now</span></div></div><div class="secondary"><div class="card stat"><div class="eyebrow">flow rate</div><div class="stat-value"><span id="flow">2.50</span> <small>g/s</small></div></div><div class="card stat"><div class="eyebrow">session time</div><div class="stat-value"><span id="timer">00:24</span></div></div></div></div><div class="card chart-card"><div class="chart-head"><h2>Pour trace</h2><span class="eyebrow">last 30 sec</span></div><div class="chart"><svg viewBox="0 0 500 260" preserveAspectRatio="none" aria-label="Weight over time"><defs><linearGradient id="area" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#f19b5c" stop-opacity=".28"/><stop offset="1" stop-color="#f19b5c" stop-opacity="0"/></linearGradient></defs><line class="gridline" x1="0" y1="30" x2="500" y2="30"/><line class="gridline" x1="0" y1="115" x2="500" y2="115"/><line class="gridline" x1="0" y1="200" x2="500" y2="200"/><path class="area" id="area-path" d="M0 208 L30 205 L60 203 L90 192 L120 197 L150 184 L180 178 L210 182 L240 165 L270 157 L300 160 L330 141 L360 130 L390 126 L420 115 L450 119 L500 103 L500 240 L0 240 Z"/><path class="line" id="chart-line" d="M0 208 L30 205 L60 203 L90 192 L120 197 L150 184 L180 178 L210 182 L240 165 L270 157 L300 160 L330 141 L360 130 L390 126 L420 115 L450 119 L500 103"/><text class="axis" x="0" y="258">30s ago</text><text class="axis" x="465" y="258">now</text></svg></div></div></section>
+  <footer><span>Readings stay in your browser. Chrome or Edge recommended.</span><span class="mono" id="mode">Ready to connect</span></footer>
+</main>
+<script type="module">
+  import { decodeMeasurement } from "./protocol.mjs";
+  const SERVICE = 0x0ffe, NOTIFY = 0xff11;
+  const $ = id => document.getElementById(id);
+  let device, characteristic, busy = false, connected = false, lastReading = 0;
+  let points = [];
+  function clearReadings() {
+    for (const id of ['weight', 'flow', 'timer']) $(id).textContent = '—';
+    $('battery').textContent = '— %';
+    $('chart-line').setAttribute('d', '');
+    $('area-path').setAttribute('d', '');
+    points = [];
+    lastReading = 0;
+  }
+  function render(m) {
+    $('weight').textContent = m.weight.toFixed(2);
+    document.querySelector('.unit').textContent = m.unit;
+    $('flow').textContent = m.flow.toFixed(2);
+    const seconds = Math.floor(m.elapsedMs / 1000);
+    $('timer').textContent = `${String(Math.floor(seconds / 60)).padStart(2,'0')}:${String(seconds % 60).padStart(2,'0')}`;
+    $('battery').textContent = `${m.battery} %`;
+    lastReading = Date.now();
+    $('reading-state').textContent = 'Live reading';
+    points.push({ time: lastReading, weight: m.weight });
+    points = points.filter(p => p.time >= lastReading - 30000);
+    const min = Math.min(...points.map(p => p.weight)) - 1;
+    const max = Math.max(...points.map(p => p.weight)) + 1;
+    const d = points.map((p, i) => `${i ? 'L' : 'M'}${500 - (lastReading - p.time) / 30000 * 500} ${220 - (p.weight - min) / (max - min) * 150}`).join(' ');
+    $('chart-line').setAttribute('d', d);
+    $('area-path').setAttribute('d', `${d} L500 240 L${500 - (lastReading - points[0].time) / 30000 * 500} 240 Z`);
+  }
+  function notification(event) {
+    try {
+      const reading = decodeMeasurement(event.target.value);
+      if (reading) render(reading);
+    } catch (error) { $('reading-state').textContent = error.message; }
+  }
+  function disconnected() {
+    connected = false;
+    characteristic?.removeEventListener('characteristicvaluechanged', notification);
+    characteristic = undefined;
+    $('status-dot').classList.remove('live');
+    $('status-text').textContent = 'Disconnected';
+    $('device-id').textContent = 'Connection closed. Reconnect to continue.';
+    $('reading-state').textContent = 'Last reading, disconnected';
+    $('mode').textContent = 'Offline';
+    $('connect').disabled = false;
+    $('connect').textContent = 'Reconnect BOOKOO';
+  }
+  async function connect() {
+    if (busy) return;
+    if (connected) { device.gatt.disconnect(); return; }
+    if (!window.isSecureContext || !navigator.bluetooth) {
+      $('status-text').textContent = 'Web Bluetooth unavailable';
+      $('device-id').textContent = 'Open this page over HTTPS in Chrome or Edge on desktop, or Chrome on Android.';
+      return;
+    }
+    busy = true;
+    $('connect').disabled = true;
+    $('connect').textContent = 'Connecting…';
+    try {
+      device = await navigator.bluetooth.requestDevice({
+        filters: [{ services: [SERVICE] }, { namePrefix: 'BOOKOO_SC' }, { namePrefix: 'OOKOO_SC' }],
+        optionalServices: [SERVICE],
+      });
+      device.addEventListener('gattserverdisconnected', disconnected, { once: true });
+      const server = await device.gatt.connect();
+      const service = await server.getPrimaryService(SERVICE);
+      characteristic = await service.getCharacteristic(NOTIFY);
+      clearReadings();
+      characteristic.addEventListener('characteristicvaluechanged', notification);
+      await characteristic.startNotifications();
+      if (!device.gatt.connected) throw new Error('The scale disconnected during setup.');
+      connected = true;
+      $('status-dot').classList.add('live');
+      $('status-text').textContent = 'Connected';
+      $('device-name').textContent = device.name || 'BOOKOO scale';
+      $('device-id').textContent = 'Bluetooth link active';
+      $('reading-state').textContent = lastReading ? 'Live reading' : 'Waiting for scale readings';
+      $('mode').textContent = 'Live Bluetooth';
+      $('connect').textContent = 'Disconnect';
+    } catch (error) {
+      if (device?.gatt.connected) device.gatt.disconnect();
+      characteristic?.removeEventListener('characteristicvaluechanged', notification);
+      $('status-text').textContent = error.name === 'NotFoundError' ? 'No scale selected' : 'Connection failed';
+      $('device-id').textContent = error.name === 'NotFoundError' ? 'Turn on your scale, then choose Connect BOOKOO.' : `${error.message} Close other apps connected to the scale and retry.`;
+      $('connect').textContent = 'Connect BOOKOO';
+    } finally { busy = false; $('connect').disabled = false; }
+  }
+  $('connect').addEventListener('click', connect);
+  setInterval(() => {
+    $('updated').textContent = lastReading ? `${Math.floor((Date.now() - lastReading) / 1000)}s since update` : 'No data yet';
+    if (connected && lastReading && Date.now() - lastReading > 5000) $('reading-state').textContent = 'No recent readings';
+  }, 1000);
+  clearReadings();
+</script>
+</body>
+</html>
