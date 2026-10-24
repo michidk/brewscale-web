@@ -3,6 +3,7 @@ export const bookoo = {
   id: 'bookoo',
   name: 'BOOKOO Themis',
   service: 0x0ffe,
+  filters: [{ services: [0x0ffe] }, { namePrefix: 'BOOKOO_SC' }, { namePrefix: 'OOKOO_SC' }],
   notificationCharacteristic: 0xff11,
   commandCharacteristic: 0xff12,
   matches(device) {

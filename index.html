@@ -107,7 +107,7 @@
       // BOOKOO firmware often omits its name and service from advertisements.
       // acceptAllDevices is required so the browser can show it in the chooser.
       device = await navigator.bluetooth.requestDevice({
-        acceptAllDevices: true,
+        filters: protocols.flatMap(p => p.filters || [{ services: [p.service] }]),
         optionalServices: protocols.map(p => p.service),
       });
       busy = false;
