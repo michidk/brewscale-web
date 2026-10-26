@@ -1,6 +1,7 @@
 # @orcastrate
 # template: projects/brewscale-web/ci
 # @end-orcastrate
+
 name: Checks and Build
 
 on:
