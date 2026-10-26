@@ -1,6 +1,6 @@
 {
   "name": "brewscale-web",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Read BOOKOO coffee scales in the browser over Web Bluetooth. TypeScript port of brewscale-rs.",
   "license": "MIT",
   "repository": "github:michidk/brewscale-web",
