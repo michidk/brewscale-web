@@ -1,12 +1,14 @@
 # brewscale-web
 
+[![npm](https://img.shields.io/npm/v/brewscale-web.svg)](https://www.npmjs.com/package/brewscale-web) [![CI](https://github.com/michidk/brewscale-web/actions/workflows/ci.yml/badge.svg)](https://github.com/michidk/brewscale-web/actions/workflows/ci.yml)
+
 A protocol-agnostic TypeScript library for coffee scales in the browser over Web Bluetooth. It provides vendor-neutral scale events, commands, capabilities, and transport boundaries. The Rust implementation is [brewscale-rs](https://github.com/michidk/brewscale-rs); both projects share the same design.
 
 | Module | Rust counterpart | Contents |
 | --- | --- | --- |
-| `src/core` | `brewscale-core` | `Protocol`, `Driver`, events, commands, errors, and the transport-neutral `Scale` over a `Link` |
-| `src/bookoo` | `brewscale-bookoo` | `mini`, `ultra`, model detection, packet decoding and command encoding |
-| `src/web-bluetooth` | `brewscale` (btleplug) | `requestScale` and the `WebBluetoothLink` backend |
+| `src/core` | [`brewscale`](https://crates.io/crates/brewscale) core | `Protocol`, `Driver`, events, commands, errors, and the transport-neutral `Scale` over a `Link` |
+| `src/bookoo` | [`brewscale`](https://crates.io/crates/brewscale) BOOKOO module | `mini`, `ultra`, model detection, packet decoding and command encoding |
+| `src/web-bluetooth` | [`brewscale`](https://crates.io/crates/brewscale) (btleplug) | `requestScale` and the `WebBluetoothLink` backend |
 | `demo` | `examples` | Live readings page built on the public API |
 
 ## Supported models
@@ -17,6 +19,12 @@ The current built-in protocol support is:
 - BOOKOO Themis Ultra
 
 More vendors can be added by implementing `Driver` and `Protocol`.
+
+## Installation
+
+```sh
+npm install brewscale-web
+```
 
 ## Usage
 
