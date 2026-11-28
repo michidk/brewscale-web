@@ -54,6 +54,7 @@ test('identifies the model from the advertised name', () => {
   assert.equal(identify({ name: 'BOOKOO_SC 1234', services: [] }), mini);
   assert.equal(identify({ name: 'BOOKOO_SC U 1234', services: [] }), ultra);
   assert.equal(identify({ name: 'OOKOO_SC U', services: [] }), ultra);
+  assert.equal(identify({ name: 'BOOKOO_SC_U 252327', services: [] }), ultra);
   assert.equal(identify({ name: 'Scale', services: [0x0ffe] }), mini);
   assert.equal(identify({ name: 'Scale', services: [] }), undefined);
 });

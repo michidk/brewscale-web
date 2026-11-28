@@ -67,7 +67,9 @@ export class WebBluetoothLink implements Link {
   write(service: number, characteristic: number, data: Uint8Array): Promise<void> {
     const write = this.writes.then(async () => {
       const c = await this.characteristic(service, characteristic);
-      await c.writeValueWithResponse(data as Uint8Array<ArrayBuffer>);
+      const bytes = data as Uint8Array<ArrayBuffer>;
+      // Mirrors brewscale's btleplug transport: a characteristic without the write property rejects acknowledged writes.
+      await (c.properties.write ? c.writeValueWithResponse(bytes) : c.writeValueWithoutResponse(bytes));
     });
     this.writes = write.catch(() => {});
     return write;
